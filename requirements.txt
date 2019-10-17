@@ -1,0 +1,6 @@
+# pip install -r requirements.txt
+# mysql and mysqldump must be in path
+wheel
+mysql-connector
+termcolor
+python-dotenv
