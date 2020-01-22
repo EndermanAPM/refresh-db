@@ -4,4 +4,5 @@ if [ "$(id -u)" != "0" ]; then
   exec sudo "$0" "$@"
 fi
 
-sudo python3 refresh_db/db_reinstall.py
+cd refresh_db
+sudo python3 db_reinstall.py

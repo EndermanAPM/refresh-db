@@ -113,12 +113,8 @@ def main():
     sql_cl = "mysql --defaults-file=temp-db-pass.cnf"
     sql_cl_db = "{} -D {} ".format(sql_cl, target_db.database)
 
-    if os.name == 'nt':
-        quote = '"'
-    elif os.name == 'posix':
-        quote = "'"
-    else:
-        raise Exception("Mac not supported :P")
+    # Unsure if will work on all platforms
+    quote = '"'
 
 
     if RESET_DB:
