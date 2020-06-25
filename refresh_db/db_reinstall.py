@@ -19,7 +19,7 @@ RESET_DB = True
 class Database:
     def __init__(self, env):
         self.host = os.getenv(f"{env}_DATABASE_HOST", 'localhost')
-        self.database = os.getenv(f"DATABASE_NAME", 'default')
+        self.database = os.getenv(f"{env}_DATABASE_NAME", 'default')
         self.user = os.getenv(f"{env}_DATABASE_USER", 'root')
         self.passwd = os.getenv(f"{env}_DATABASE_PASS", '')
         self.port = os.getenv(f"{env}_DATABASE_PORT", '3306')
@@ -73,7 +73,7 @@ def generate_production_dump():
     # toDO: dynamic size
     if not os.path.exists(SQL_DUMPS):
         os.makedirs(SQL_DUMPS)
-    print("Today's dump not found, downloading...")
+    print(f"Today's dump not found, downloading from {origin_db.host}...")
     os.system(f"mysqldump --single-transaction -h {origin_db.host} -u {origin_db.user} -p{origin_db.passwd} {origin_db.database}{' | pv --size 56m' if os.name == 'posix' else ''} > dumps/{datetime.datetime.today().date().isoformat()}-dump.sql")
 
 
