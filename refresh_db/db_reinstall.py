@@ -74,7 +74,7 @@ def generate_production_dump():
     if not os.path.exists(SQL_DUMPS):
         os.makedirs(SQL_DUMPS)
     print(f"Today's dump not found, downloading from {origin_db.host}...")
-    os.system(f"mysqldump --single-transaction --column-statistics=0 -h {origin_db.host} -u {origin_db.user} -p{origin_db.passwd} {origin_db.database}{' | pv --size 256m' if os.name == 'posix' else ''} > dumps/{datetime.datetime.today().date().isoformat()}-dump.sql")
+    os.system(f"mysqldump --single-transaction --column-statistics=0 -h {origin_db.host} -u {origin_db.user} -p{origin_db.passwd} {origin_db.database}{' | pv --size 430m' if os.name == 'posix' else ''} > dumps/{datetime.datetime.today().date().isoformat()}-dump.sql")
 
 
 def get_prod_dump():
