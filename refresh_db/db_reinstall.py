@@ -1,4 +1,5 @@
 import datetime
+import glob
 import json
 import os
 import time
@@ -37,6 +38,15 @@ MYSQL_IGNORED_EXCEPTIONS = {
 target_db = Database('LOCAL')
 origin_db = Database('PROD')
 
+def get_newest_file(directory):
+    files = glob.glob(os.path.join(directory, '*'))  # Get all files in directory
+    if not files:  # If no files found, return None
+        return None
+    newest_file = max(files, key=os.path.getmtime)  # Get file with latest modification time
+    return newest_file
+
+def get_file_size_in_mb(file_path):
+    return os.path.getsize(file_path) / (1024 * 1024)
 
 def execute_scripts_from_file(filename, error_color=None):
     cnx = mysql_connector.connect(user=target_db.user, password=target_db.passwd, host=target_db.host,
@@ -70,11 +80,14 @@ def execute_scripts_from_file(filename, error_color=None):
 
 
 def generate_production_dump():
-    # toDO: dynamic size
     if not os.path.exists(SQL_DUMPS):
         os.makedirs(SQL_DUMPS)
+        last_dump_mb = 1000
+    else:
+        last_dump_mb = int(get_file_size_in_mb(get_newest_file(SQL_DUMPS)))
     print(f"Today's dump not found, downloading from {origin_db.host}...")
-    os.system(f"mysqldump --single-transaction --column-statistics=0 -h {origin_db.host} -u {origin_db.user} -p{origin_db.passwd} {origin_db.database}{' | pv --size 666m' if os.name == 'posix' else ''} > dumps/{datetime.datetime.today().date().isoformat()}-dump.sql")
+    posix_pv_size_string = f" | pv --size {last_dump_mb}m"
+    os.system(f"mysqldump --single-transaction --column-statistics=0 -h {origin_db.host} -u {origin_db.user} -p{origin_db.passwd} {origin_db.database}{posix_pv_size_string if os.name == 'posix' else ''} > dumps/{datetime.datetime.today().date().isoformat()}-dump.sql")
 
 
 def get_prod_dump():
